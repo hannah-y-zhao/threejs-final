@@ -23,13 +23,15 @@ export function addDash(){
 	const boxMaterial=new THREE.MeshStandardMaterial({color: "aqua"})
 	const boxMesh=new THREE.Mesh(box,boxMaterial)
 	boxMesh.position.set(0,0,0)
+	boxMesh.userData.name="dash"
 	return boxMesh
 }
 
 export function addDot(){
-	const sphere=new THREE.SphereGeometry(.5,10,10)
+	const sphere=new THREE.SphereGeometry(1,10,10)
 	const sphereMaterial=new THREE.MeshStandardMaterial({color:"aqua"})
 	const sphereMesh=new THREE.Mesh(sphere,sphereMaterial)
-	sphereMesh.position.set(0,0,3)
+	sphereMesh.position.set(0,0,0)
+	sphereMesh.userData.name="dot"
 	return sphereMesh
 }
