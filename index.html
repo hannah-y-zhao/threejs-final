@@ -5,11 +5,32 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite App</title>
+  <title>Text to Character</title>
+  <style>
+    #intro{
+      width:100%;
+      height:100vh;
+      display:flex;
+      flex-flow:column nowrap;
+      align-items: center;
+      justify-content: center;
+      background-color:aquamarine;
+    }
+    input{
+      margin:0 0 1em 0;
+      height:2rem;
+      width: 20%;
+    }
+  </style>
 </head>
 
 <body>
   <script type="module" src="/main.js"></script>
+  <div id="intro">
+    <p>Please write something!</p>
+    <input type="text" id="input">
+    <button type="button" id="button">Enter</button>
+  </div>
 </body>
 
 </html>

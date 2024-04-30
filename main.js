@@ -5,6 +5,7 @@ import { addLight } from './addLights'
 import Model from './Model'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { translation } from './morse'
+import gsap from 'gsap'
 
 const scene = new THREE.Scene()
 const renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -23,8 +24,17 @@ const mixers = []
 const clock = new THREE.Clock()
 const controls = new OrbitControls(camera, renderer.domElement)
 let tempArr=[]
-init()
+const blues=["blue-textured1.png","blue-textured2.png","blue.png","blue2.png"]
+// init()
+document.getElementById("button").onclick=checkinput
+function checkinput(){
+	if(document.getElementById("input").value){
+		init()
+	}
+}
+
 function init() {
+	document.getElementById("intro").style.display="none"
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	document.body.appendChild(renderer.domElement)
 
@@ -32,7 +42,8 @@ function init() {
 	meshes.default = addBoilerPlateMesh()
 	meshes.standard = addStandardMesh()
 	meshes.dash=addDash()
-	meshes.dot=addDot()
+	let material=blues[Math.floor(Math.random()*blues.length)]
+	meshes.dot=addDot(material)
 
 	//lights
 	lights.defaultLight = addLight()
@@ -43,12 +54,13 @@ function init() {
 	scene.add(lights.defaultLight)
 
 	resize()
-	animate()
 	translateToMorse()
+	animate()
+
 }
 
 function translateToMorse(){
-	let user=prompt("type")
+	let user=document.getElementById("input").value
 	if(user.length>0){
 		let userText
 		if(user.indexOf(" ")!==-1){//has white space
@@ -74,6 +86,44 @@ function translateToMorse(){
 			checkSpaces(userMorse,false,tempArr[0])
 		}
 	}
+	for(let i=0;i<tempArr.length;i++){
+		tempArr[i].position.x+=5*i*tempArr.length
+		for(let j=0;j<tempArr[i].children.length;j++){
+			if(tempArr[i].children[j].userData.name=="dot"){
+				tempArr[i].children[j].position.x+=(j*tempArr[i].children.length)
+			// }else if(tempArr[i].children[j].userData.name=="dash"&&tempArr[i].children[j+1]){
+			// 	tempArr[i].children[j+1].position.x+=6+(j*tempArr[i].children.length)
+			// 
+			}else{
+				tempArr[i].children[j].position.x+=(j*tempArr[i].children.length)-3
+			}
+			tempArr[i].children[j].position.y=0
+			console.log(tempArr[i].children[j].userData.name)
+		}
+		// tempArr[i].position.y=-i*5
+	}
+	setTimeout(scrunchIn,3000)
+	
+}
+
+function scrunchIn(){
+	gsap.to(tempArr[1].position,
+		{
+			y:5,
+			duration:1,
+			ease:'power1.inOut',
+			onComplete: scrunchOut
+		})
+}
+
+function scrunchOut(){
+	gsap.to(tempArr[1].position,
+		{
+			y:0,
+			duration:1,
+			ease:'power1.inOut',
+			onComplete: scrunchIn
+		})
 }
 
 
@@ -82,8 +132,8 @@ function checkSpaces(mArray,hasSpace,group){
 }
 
 window.addEventListener("click",function(){
-	console.log(tempArr[0].children)
-	tempArr[0].position.x+=0.5
+	console.log(tempArr)
+	// tempArr[0].position.x+=0.5
 })
 
 function translateToMesh(mArray,group){
@@ -127,12 +177,18 @@ function animate() {
 	meshes.dot.rotation.z += 0.01
 
 	for(let i=0;i<tempArr.length;i++){
-		tempArr[i].rotation.x+=0.05*i
-		tempArr[i].rotation.y+=0.01*i
-		for(let j=0;j<tempArr[i].children.length;j++){
-			tempArr[i].children[j].rotation.z+=0.002*j
-			tempArr[i].children[j].position.x=j
-		}
+		// tempArr[i].rotation.x+=0.05*i
+		// tempArr[i].rotation.y+=0.01*i
+		// // tempArr[i].scale.x=3
+		// for(let j=0;j<tempArr[i].children.length;j++){
+		// 	tempArr[i].children[j].rotation.z+=0.002*j
+		// 	// tempArr[i].children[j].position.x=j
+		// }
+		// tempArr[i].position.y=-i*5
 	}
+	// tempArr[0].scale.x=2
+	// tempArr[0].scale.y=2
+	// tempArr[0].scale.z=2
+
 	renderer.render(scene, camera)
 }
