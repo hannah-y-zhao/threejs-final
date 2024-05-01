@@ -18,9 +18,12 @@ export function addStandardMesh() {
 	return boxMesh
 }
 
-export function addDash(matcap){
+export function addDash(url){
+	url="/mats/"+url+".png"
+	// console.log(url)
+	const mat=textureLoader.load(url)
 	const box=new THREE.BoxGeometry(3,1,1)
-	const boxMaterial=new THREE.MeshStandardMaterial({color: "aqua"})
+	const boxMaterial=new THREE.MeshMatcapMaterial({matcap:mat})
 	const boxMesh=new THREE.Mesh(box,boxMaterial)
 	boxMesh.position.set(0,0,0)
 	boxMesh.userData.name="dash"
@@ -28,11 +31,11 @@ export function addDash(matcap){
 }
 
 export function addDot(url){
-	url="/mats/"+url
-	console.log(url)
-	// const mat=textureLoader.load(url)
-	const mat=textureLoader.load("/mats/blue.png")
-	console.log(mat)
+	url="/mats/"+url+".png"
+	// console.log(url)
+	const mat=textureLoader.load(url)
+	// const mat=textureLo                                                   ader.load("/mats/blue.png")
+	// console.log(mat)
 	const sphere=new THREE.SphereGeometry(1,10,10)
 	const sphereMaterial=new THREE.MeshMatcapMaterial({matcap:mat})
 	const sphereMesh=new THREE.Mesh(sphere,sphereMaterial)
