@@ -14,12 +14,16 @@
       flex-flow:column nowrap;
       align-items: center;
       justify-content: center;
-      background-color:rgba(127, 255, 212, 0);
+
     }
     input{
       margin:0 0 1em 0;
       height:2rem;
       width: 20%;
+    }
+    h1{
+      padding:0 1em 0 1em;
+      text-align: center;
     }
   </style>
 </head>
@@ -27,7 +31,8 @@
 <body>
   <script type="module" src="/main.js"></script>
   <div id="intro">
-    <p>Please write something!</p>
+    <h1>What if you could turn what you write into a worm?</h1>
+    <p>Please write at least three words!</p>
     <input type="text" id="input">
     <button type="button" id="button">Enter</button>
   </div>

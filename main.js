@@ -34,41 +34,14 @@ camera.position.set(0, 0, 50)
 let introShapes = []
 
 function intro() {
-	// document.getElementById("intro").style.display="none"
-	renderer.setSize(window.innerWidth, window.innerHeight)
-	document.body.appendChild(renderer.domElement)
-	lights.defaultLight = addLight()
-	resize()
-
-	scene.add(lights.defaultLight)
-	setBg()
-
-	let index = 0
-	const randShapes = Math.floor(Math.random() * 5) + 5
-	for (let i = 0; i < randShapes; i++) {
-		const temp = Math.floor(Math.random() * randShapes) + 1
-		let scaleF = (i % 2) + 1
-		if (temp % 2 == 0) {
-			introShapes.push(addDot(randomAll()))
-			introShapes[index].scale.set(scaleF, scaleF, scaleF)
-			introShapes[index].position.x = Math.floor(
-				Math.random() * renderer.width
-			)
-			introShapes[index].position.y = Math.floor(
-				Math.random() * window.innerHeight
-			)
-			introShapes[index].position.z = -Math.floor(Math.random() * 10)
-			scene.add(introShapes[index])
-		} else {
-			introShapes.push(addDash(randomAll()))
-			introShapes[index].scale.set(scaleF, scaleF, scaleF)
-			scene.add(introShapes[index])
-		}
-		index++
-	}
-	console.log(scene.children)
-	// animate()
+	let introDiv=document.querySelector("#intro")
+	introDiv.style.background=
+	`linear-gradient(${Math.floor(Math.random()*360)}deg,rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 100%),rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 0%) ${Math.floor(Math.random()*50)+30}%), 
+	linear-gradient(${Math.floor(Math.random()*360)}deg,rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 100%),rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 0%) ${Math.floor(Math.random()*50)+30}%),
+	linear-gradient(${Math.floor(Math.random()*360)}deg,rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 100%),rgb(${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} ${Math.floor(Math.random()*256)} / 0%) ${Math.floor(Math.random()*50)+20}%)`
+  	console.log(introDiv.style)
 }
+intro()
 
 //Globals
 const meshes = {}
@@ -97,33 +70,17 @@ const pathobj=new THREE.Line(pathgeometry,pathmat)
 document.getElementById('button').onclick = checkinput
 function checkinput() {
 	if (document.getElementById('input').value) {
-		for (let i = 0; i < introShapes.length; i++) {
-			scene.remove(introShapes[i])
-		}
 		init()
-		// intro()
 	}
 }
-// intro()
 
 function init() {
-	// introShapes=[]
 	document.getElementById('intro').style.display = 'none'
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	document.body.appendChild(renderer.domElement)
 
-	//meshes
-	// meshes.default = addBoilerPlateMesh()
-	// meshes.standard = addStandardMesh()
-	// meshes.dash=addDash()
-	// let material=blues[Math.floor(Math.random()*blues.length)]
-	// meshes.dot=addDot(material)
-
 	//lights
 	lights.defaultLight = addLight()
-
-	//changes
-	// meshes.default.scale.set(2, 2, 2)
 
 	scene.add(lights.defaultLight)
 	scene.add(pathobj)
@@ -165,7 +122,6 @@ function translateToMorse() {
 			checkSpaces(userMorse, false, tempArr[0])
 		}
 	}
-	// meshes.pivot = new THREE.Object3D()
 
 	let currPosition = 0
 	for (let i = 0; i < tempArr.length; i++) {
@@ -260,7 +216,8 @@ function scrunchOut() {
 }
 
 function checkSpaces(mArray, hasSpace, group) {
-	translateToMesh(mArray, group)
+	let pickmat=Math.floor(Math.random()*4)
+	translateToMesh(mArray, group,pickmat)
 }
 
 window.addEventListener('click', function () {
@@ -268,27 +225,34 @@ window.addEventListener('click', function () {
 	// tempArr[0].position.x+=0.5
 })
 
-function translateToMesh(mArray, group) {
-	// console.log(mArray)
+function translateToMesh(mArray, group,check) {
 	let count = 0
 
 	for (let i = 0; i < mArray.length; i++) {
 		let charMorse = mArray[i].split('')
 		for (let j = 0; j < charMorse.length; j++) {
 			if (charMorse[j] == '.') {
-				let temp = randomAll()
+				let temp
+				if (check==0){
+					temp = randomAll()
+				}else{
+					temp=randomGroup()
+				} 
 				meshes['letter' + i + '-dot' + j] = addDot(temp)
 				group.add(meshes['letter' + i + '-dot' + j])
 				scene.add(group)
-				// meshes['letter' + i + '-dot' + j].position.x = -3 + j * i
-				// meshes['letter' + i + '-dot' + j].position.y = count
+
 			} else if (charMorse[j] == '-') {
-				let temp = randomAll()
+				let temp
+				if (check==0){
+					temp = randomAll()
+				}else{
+					temp=randomGroup()
+				} 
 				meshes['letter' + i + '-dash' + j] = addDash(temp)
 				group.add(meshes['letter' + i + '-dash' + j])
 				scene.add(group)
-				// meshes['letter' + i + '-dash' + j].position.y = -3 + j * i
-				// meshes['letter' + i + '-dash' + j].position.x = count * 4
+
 			}
 		}
 
@@ -320,8 +284,6 @@ function resize() {
 }
 
 function animate() {
-	// const target=controls.target
-	// controls.update()
 
 	const time=Date.now()
 	const t=(time/2000%6)/6
