@@ -67,7 +67,7 @@ function intro() {
 		index++
 	}
 	console.log(scene.children)
-	animate()
+	// animate()
 }
 
 //Globals
@@ -77,6 +77,22 @@ const mixers = []
 const clock = new THREE.Clock()
 const controls = new OrbitControls(camera, renderer.domElement)
 let tempArr = []
+const points=[
+	new THREE.Vector3(40,0,0),
+	new THREE.Vector3(34.64,0, 20),
+	new THREE.Vector3(20,0,34.64),
+	new THREE.Vector3(0,0,40),
+	new THREE.Vector3(-20,0,34.64),
+	new THREE.Vector3(-34.64,0,20),
+	new THREE.Vector3(-40,0, 0),
+	new THREE.Vector3(-34.64,0,-20),
+	new THREE.Vector3(-20,0,-34.64),
+	new THREE.Vector3(0,0,-40),
+]
+const path=new THREE.CatmullRomCurve3(points,true)
+const pathgeometry=new THREE.BufferGeometry().setFromPoints(path.getPoints(50))
+const pathmat=new THREE.LineBasicMaterial({color:false,transparent:true,opacity:0})
+const pathobj=new THREE.Line(pathgeometry,pathmat)
 
 document.getElementById('button').onclick = checkinput
 function checkinput() {
@@ -110,6 +126,7 @@ function init() {
 	// meshes.default.scale.set(2, 2, 2)
 
 	scene.add(lights.defaultLight)
+	scene.add(pathobj)
 
 	resize()
 	translateToMorse()
@@ -186,31 +203,31 @@ function translateToMorse() {
 		}
 	}
 
-	setTimeout(scrunchIn, 3000)
+	setTimeout(scrunch, 1000)
 }
 
-function scrunchIn() {
-	gsap.to(tempArr[1].position, {
-		y: 5,
-		duration: 3,
-		ease: 'power1.inOut',
-		onComplete: scrunchOut,
-	})
-	gsap.to(tempArr[2].position, {
-		x: (tempArr[2].position.x -= 2),
-		duration: 3,
-		ease: 'power1.inOut',
-		// onComplete: scrunchIn,
-	},"+=3")
+function scrunch() {
+	const yOffset=5-(((tempArr[1].children.length-1)/2)**2)
+
+	let tl=gsap.timeline({repeat:-1})
 	for (let i=0;i<tempArr[1].children.length;i++){
-		gsap.to(tempArr[1].children[i].position,{
-			y:5-((i-(tempArr[1].children.length-1)/2)**2),
-			duration: 3,
+		let xpos=tempArr[1].children[i].position.x-=1
+		console.log("after")
+		tl.to(tempArr[1].children[i].position,{
+			y:5-((i-(tempArr[1].children.length-1)/2)**2)-yOffset,
+			duration: 1,
 			ease: 'power1.inOut'
-		})
+		},"-=0.85")
 	}
-	
-	setTimeout(scrunchOut,3000)
+	for (let i=0;i<tempArr[1].children.length;i++){
+		let xpos=tempArr[1].children[i].position.x-=1
+		console.log("after")
+		tl.to(tempArr[1].children[i].position,{
+			y:0,
+			duration: 1,
+			ease: 'power1.inOut'
+		},"-=0.85")
+	}	
 }
 
 function scrunchOut() {
@@ -230,7 +247,7 @@ function scrunchOut() {
 		duration: 3,
 		ease: 'power1.inOut',
 		// onComplete: scrunchOut,
-	},"-=3")
+	},)
 	gsap.to(tempArr[1].position, {
 		x: (tempArr[1].position.x -= 2),
 		y: 0,
@@ -303,31 +320,46 @@ function resize() {
 }
 
 function animate() {
-	requestAnimationFrame(animate)
-	const delta = clock.getDelta()
-	// console.log(scene.children)
+	// const target=controls.target
+	// controls.update()
 
-	// meshes.dot.rotation.x += 0.01
-	// meshes.dot.rotation.z += 0.01
-	if (introShapes[0]) {
-		for (let i = 0; i < introShapes.length; i++) {
-			introShapes[i].rotation.x += 0.01 * i + 0.01
-			introShapes[i].rotation.y += 0.01 * i + 0.01
-			// // tempArr[i].scale.x=3
-			// for(let j=0;j<tempArr[i].children.length;j++){
-			// 	tempArr[i].children[j].rotation.z+=0.002*j
-			// 	// tempArr[i].children[j].position.x=j
-			// }
-			// tempArr[i].position.y=-i*5
-		}
-	}
+	const time=Date.now()
+	const t=(time/2000%6)/6
+	// console.log(t)
 
-	// tempArr[0].scale.x=2
-	// tempArr[0].scale.y=2
-	// tempArr[0].scale.z=2
+	const delays = [0, 0.2, 0.4]
 
-	if (meshes.pivot) {
-		meshes.pivot.rotation.y += 0.01
-	}
+    tempArr.forEach((group, index) => {
+        
+        group.children.forEach(child => {
+			const t = ((time / 2000 + delays[index]) % 6) / 6
+        
+			const position = path.getPointAt(t);
+			group.position.copy(position);
+			// const tangent = path.getTangentAt(t).normalize();
+
+            // child.lookAt(position.clone().add(tangent));
+        });
+    });
+	
+
+	// const delta = clock.getDelta()
+	// const position=path.getPointAt(t)
+	// tempArr[0].position.copy(position)
+	// tempArr[1].position.copy(position)
+	// tempArr[2].position.copy(position)
+
+	// const tangent=path.getTangentAt(t).normalize()
+	// for(let i=0;i<tempArr.length;i++){
+	// 	for(let j=0;j<tempArr[i].children.length;j++){
+	// 		// tempArr[i].children[j].lookAt(position.clone().add(tangent))
+			
+	// 	}
+	// }
+	// tempArr[0].lookAt(position.clone().add(tangent))
+	// tempArr[1].lookAt(position.clone().add(tangent))
+	// tempArr[2].lookAt(position.clone().add(tangent))
+
 	renderer.render(scene, camera)
+	requestAnimationFrame(animate)
 }
