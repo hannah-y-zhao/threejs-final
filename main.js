@@ -50,6 +50,7 @@ const mixers = []
 const clock = new THREE.Clock()
 const controls = new OrbitControls(camera, renderer.domElement)
 let tempArr = []
+const CRAWL_STEP = 3;
 const points=[
 	new THREE.Vector3(40,0,0),
 	new THREE.Vector3(34.64,0, 20),
@@ -123,43 +124,22 @@ function translateToMorse() {
 		}
 	}
 
-	let currPosition = 0
+	let currPosition = 0;
 	for (let i = 0; i < tempArr.length; i++) {
-		if (i == 0) {
-			let size = tempArr[0].children.reduce(
-				(currentPosition, currentElement) => {
-					if (currentElement.userData.name === 'dot') {
-						currentPosition += 2
-					} else {
-						currentPosition += 3
-					}
-					currentPosition++
-					currentElement.position.x = currentPosition
-					return currentPosition
-				},
-				0
-			)
-			currPosition += size + 5
-		} else {
-			let size = tempArr[i].children.reduce(
-				(currentPosition, currentElement) => {
-					if (currentElement.userData.name === 'dot') {
-						currentPosition += 2
-					} else {
-						currentPosition += 3
-					}
-					currentPosition++
-					currentElement.position.x = currentPosition
-					return currentPosition
-				},
-				0
-			)
-			tempArr[i].position.x = currPosition
-			currPosition += size + 5
-		}
+	  tempArr[i].position.x = currPosition;
+	  const size = tempArr[i].children.reduce(
+		(currentPosition, currentElement) => {
+		  currentElement.position.x = currentPosition;
+		  currentPosition += currentElement.userData.name === "dot" ? 3 : 5;
+		  return currentPosition;
+		},
+		0
+	  );
+  
+	  currPosition += size + 5;
 	}
 
-	setTimeout(scrunch, 1000)
+	setTimeout(scrunchIn, 500)
 }
 
 function scrunch() {
@@ -186,34 +166,54 @@ function scrunch() {
 	}	
 }
 
-function scrunchOut() {
-	
-	for (let i=0;i<tempArr[1].children.length;i++){
-		gsap.to(tempArr[1].children[i].position,{
-			// x: (tempArr[1].children[i].position.x -= 2),
-			y:0,
-			duration: 3,
-			ease: 'power1.inOut',
-		})
-		// console.log(tempArr[1].children[i].position)
-		// console.log(tempArr[1].children[i].position.y)
+function scrunchIn() {
+	const segments = tempArr[1].children.length - 1;
+	const midPoint = segments / 2;
+	for (let i = 0; i < tempArr[1].children.length; i++) {
+	  gsap.to(tempArr[1].children[i].position, {
+		x: tempArr[1].children[i].position.x - (i * CRAWL_STEP) / segments,
+		y: Math.sin((i * Math.PI) / segments) * 5,
+		duration: 1,
+		ease: "power1.inOut",
+	  });
 	}
+  
+	gsap.to(tempArr[2].position, {
+	  x: tempArr[2].position.x - CRAWL_STEP,
+	  duration: 1,
+	  ease: "power1.inOut",
+	});
+  
+	setTimeout(scrunchOut, 1000);
+  }
+  
+  function scrunchOut() {
 	gsap.to(tempArr[0].position, {
-		x: (tempArr[0].position.x -= 2),
-		duration: 3,
-		ease: 'power1.inOut',
-		// onComplete: scrunchOut,
-	},)
+	  x: tempArr[0].position.x - CRAWL_STEP,
+	  y: 0,
+	  duration: 1,
+	  ease: "power1.inOut",
+	});
+  
 	gsap.to(tempArr[1].position, {
-		x: (tempArr[1].position.x -= 2),
+	  x: tempArr[1].position.x - CRAWL_STEP,
+	  y: 0,
+	  duration: 1,
+	  ease: "power1.inOut",
+	});
+  
+	const segments = tempArr[1].children.length - 1;
+	for (let i = 0; i < tempArr[1].children.length; i++) {
+	  gsap.to(tempArr[1].children[i].position, {
+		x: tempArr[1].children[i].position.x + (i * CRAWL_STEP) / segments,
 		y: 0,
-		duration: 3,
-		ease: 'power1.inOut',
-		// onComplete: scrunchIn,
-	})
-	console.log(tempArr[1].position)
-	setTimeout(scrunchIn,3000)
-}
+		duration: 1,
+		ease: "power1.inOut",
+	  });
+	}
+  
+	setTimeout(scrunchIn, 1000);
+  }
 
 function checkSpaces(mArray, hasSpace, group) {
 	let pickmat=Math.floor(Math.random()*4)
@@ -291,18 +291,18 @@ function animate() {
 
 	const delays = [0, 0.2, 0.4]
 
-    tempArr.forEach((group, index) => {
+    // tempArr.forEach((group, index) => {
         
-        group.children.forEach(child => {
-			const t = ((time / 2000 + delays[index]) % 6) / 6
+    //     group.children.forEach(child => {
+	// 		const t = ((time / 2000 + delays[index]) % 6) / 6
         
-			const position = path.getPointAt(t);
-			group.position.copy(position);
-			// const tangent = path.getTangentAt(t).normalize();
+	// 		const position = path.getPointAt(t);
+	// 		group.position.copy(position);
+	// 		// const tangent = path.getTangentAt(t).normalize();
 
-            // child.lookAt(position.clone().add(tangent));
-        });
-    });
+    //         // child.lookAt(position.clone().add(tangent));
+    //     });
+    // });
 	
 
 	// const delta = clock.getDelta()
