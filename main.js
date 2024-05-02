@@ -166,7 +166,7 @@ function translateToMorse() {
 				},
 				0
 			)
-			currPosition += size + 2
+			currPosition += size + 5
 		} else {
 			let size = tempArr[i].children.reduce(
 				(currentPosition, currentElement) => {
@@ -182,7 +182,7 @@ function translateToMorse() {
 				0
 			)
 			tempArr[i].position.x = currPosition
-			currPosition += size + 2
+			currPosition += size + 5
 		}
 	}
 
@@ -190,27 +190,25 @@ function translateToMorse() {
 }
 
 function scrunchIn() {
-	// gsap.to(tempArr[1].position, {
-	// 	y: 5,
-	// 	duration: 3,
-	// 	ease: 'power1.inOut',
-	// 	onComplete: scrunchOut,
-	// })
+	gsap.to(tempArr[1].position, {
+		y: 5,
+		duration: 3,
+		ease: 'power1.inOut',
+		onComplete: scrunchOut,
+	})
 	gsap.to(tempArr[2].position, {
 		x: (tempArr[2].position.x -= 2),
-		duration: 6,
+		duration: 3,
 		ease: 'power1.inOut',
 		// onComplete: scrunchIn,
 	},"+=3")
 	for (let i=0;i<tempArr[1].children.length;i++){
 		gsap.to(tempArr[1].children[i].position,{
-			y:5-((1-(i/2))^2),
+			y:5-((i-(tempArr[1].children.length-1)/2)**2),
 			duration: 3,
 			ease: 'power1.inOut'
 		})
-		console.log(tempArr[1].children[i])
 	}
-	// console.log(tempArr[1].children)
 	
 	setTimeout(scrunchOut,3000)
 }
@@ -219,27 +217,28 @@ function scrunchOut() {
 	
 	for (let i=0;i<tempArr[1].children.length;i++){
 		gsap.to(tempArr[1].children[i].position,{
-			x: (tempArr[1].children[i].position.x -= 2),
+			// x: (tempArr[1].children[i].position.x -= 2),
 			y:0,
 			duration: 3,
 			ease: 'power1.inOut',
 		})
+		// console.log(tempArr[1].children[i].position)
 		// console.log(tempArr[1].children[i].position.y)
 	}
 	gsap.to(tempArr[0].position, {
 		x: (tempArr[0].position.x -= 2),
-		duration: 6,
+		duration: 3,
 		ease: 'power1.inOut',
 		// onComplete: scrunchOut,
 	},"-=3")
-	// gsap.to(tempArr[1].position, {
-	// 	x: (tempArr[1].position.x -= 2),
-	// 	y: 0,
-	// 	duration: 3,
-	// 	ease: 'power1.inOut',
-	// 	onComplete: scrunchIn,
-	// })
-	
+	gsap.to(tempArr[1].position, {
+		x: (tempArr[1].position.x -= 2),
+		y: 0,
+		duration: 3,
+		ease: 'power1.inOut',
+		// onComplete: scrunchIn,
+	})
+	console.log(tempArr[1].position)
 	setTimeout(scrunchIn,3000)
 }
 
